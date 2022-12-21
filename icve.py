@@ -97,8 +97,8 @@ def main():
         print("找不到img文件夹")
         input("请输入任意内容后按回车键退出\n")
         exit()
-    if not os.path.exists("task.txt"):
-        print("找不到task.txt文件")
+    if not os.path.exists("task.xls"):
+        print("找不到task.xls文件")
         input("请输入任意内容后按回车键退出\n")
         exit()
     final_task_list, widget_list = get_task()
