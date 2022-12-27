@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 """
-Time:        2022/12/20 10:51
-Version:     V 0.0.1
+Time:        2022/12/27 11:10
+Version:     V 0.0.2
 File:        icve.py
 Describe:    
 Author:      Lanyu
@@ -15,6 +15,7 @@ import pyautogui
 import os
 import requests
 import xlrd
+from bs4 import BeautifulSoup
 
 
 def get_task():
@@ -22,6 +23,16 @@ def get_task():
     worksheet = workbook.sheet_by_index(0)
 
     # 控件列表
+    try:
+        widget_list = ["img/" + worksheet.col(0)[1].value, "img/" + worksheet.col(0)[3].value,
+                       "img/" + worksheet.col(0)[5].value, "img/" + worksheet.col(0)[7].value,
+                       "img/" + worksheet.col(0)[9].value, "img/" + worksheet.col(0)[11].value,
+                       "img/" + worksheet.col(0)[13].value]
+    except IndexError:
+        print("表格第一列填写有误")
+        input("请输入任意内容后按回车键退出\n")
+        exit()
+
     widget_list = ["img/" + worksheet.col(0)[1].value, "img/" + worksheet.col(0)[3].value,
                    "img/" + worksheet.col(0)[5].value, "img/" + worksheet.col(0)[7].value,
                    "img/" + worksheet.col(0)[9].value, "img/" + worksheet.col(0)[11].value,
@@ -93,6 +104,8 @@ def click(img, widget_list):
 
 
 def main():
+    print("程序已启动，2秒后开始操作")
+    time.sleep(2)
     if not os.path.exists("img"):
         print("找不到img文件夹")
         input("请输入任意内容后按回车键退出\n")
@@ -108,23 +121,35 @@ def main():
         click(img, widget_list)
         print("点击", img)
         i += 1
+    input("所有任务执行完毕，请输入任意内容后按回车键退出\n")
+    exit()
 
 
 def welcome():
     print("本程序已开源，源代码、使用说明、配置教程都在GitHub和Gitee里，欢迎来Star和Fork，地址：")
-    print("https://github.com/silence2021silence/icve")
-    print("https://gitee.com/silence2021silence/icve")
+    print("https://github.com/silence2021silence/")
+    print("https://gitee.com/silence2021silence/")
     print("技术支持与意见反馈可直接在仓库建issues或者关注微信公众号“geeklanyu”留言或者联系邮箱“silence2021silence@163.com”")
     print("免责声明：本程序仅供学习、研究与娱乐使用，使用本程序违反相关法律或相关规章制度的与作者无关，禁止用于任何商业用途。")
     text = input("请输入“同意”或“不同意”后按回车键\n")
     if text != "同意":
         exit()
-    version = "v0.0.1"
-    new_version = requests.get("https://zhangkelan.com/icve-update.html").text
-    if version != new_version:
-        print("本程序有新版本，请前往GitHub或者Gitee下载最新版本")
-        input("请输入任意内容后按回车键退出\n")
-        exit()
+    else:
+        version = "v0.0.2"
+        print("当前版本为%s，正在检查更新..." % version)
+        html = requests.get("https://gitee.com/silence2021silence/icve/blob/master/update.html").text
+        soup = BeautifulSoup(html, 'lxml')
+        new_version = soup.find(class_="line", id="LC1").text
+        if version != new_version[:6]:
+            print("本程序有新版本，最新版本为%s，请前往GitHub或者Gitee下载最新版本" % new_version[:6])
+            content = input("继续使用旧版本请输入“否”\n")
+            if content == "否":
+                main()
+            else:
+                exit()
+        else:
+            print("已是最新版本")
+            main()
 
 
 if __name__ == "__main__":
