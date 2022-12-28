@@ -1,5 +1,5 @@
 # icve
-### icve智慧职教MOOC学院自动刷视频脚本 [[最新版本为v0.0.2点击下载]](https://www.aliyundrive.com/s/nDLUnSwzrgS)[[淘宝接商单]](https://geeklanyu.taobao.com)
+### icve智慧职教MOOC学院新版/旧版自动刷视频脚本 [[最新版本为v0.0.2点击下载]](https://www.aliyundrive.com/s/nDLUnSwzrgS)[[淘宝接商单]](https://geeklanyu.taobao.com)
 ### 技术支持与意见反馈可直接在仓库建issues或者关注微信公众号“geeklanyu”留言或者联系邮箱“silence2021silence@163.com”。
 ### 免责声明：本程序仅供学习、研究与娱乐使用，使用本程序违反相关法律或相关规章制度的与作者无关，禁止用于任何商业用途。
 
@@ -13,7 +13,7 @@
 #### pip install opencv-python
 #### pip install pillow
 
-# 配置步骤：
+# 旧版MOOC配置步骤：
 ## 1.创建img文件夹，下载task.xls文件，并确保与.exe可执行文件在同一目录下，文件夹名和文件名不能错，否则会报错。
 ### ![readme/img1.png](readme/img1.png)
 ## 2.对要刷的章节、模块、任务进行截图采样，保存到img文件夹，注意文件名不能有中文。
@@ -31,3 +31,15 @@
 ### ![readme/img11.png](readme/img11.png)
 ## 5.打开课程学习页面，注意要把所有的分支都折叠起来，然后再双击打开.exe可执行文件，然后最小化程序窗口，即可开始。
 ### ![readme/img12.png](readme/img12.png)
+
+# 新版MOOC配置步骤：
+## 请参考旧版MOOC的配置步骤
+## 新版MOOC注意事项：
+## 1.新版用的配置表格有所不同，旧版的表格文件名为task.xls，而新版的是task_new.xls，并且表格的内容也不一样，按照提示填写即可。
+### ![readme/img17.png](readme/img17.png)
+### 新版的表格
+### ![readme/img16.png](readme/img16.png)
+### 视频键采样
+### ![readme/img15.png](readme/img15.png)
+### 播放键采样
+### ![readme/img14.png](readme/img14.png)
