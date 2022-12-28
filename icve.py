@@ -260,7 +260,7 @@ def welcome():
     if text != "同意":
         exit()
     else:
-        version = "v0.0.3"
+        version = "v0.0.4"
         print("当前版本为%s，正在检查更新..." % version)
         html = requests.get("https://gitee.com/silence2021silence/icve/blob/master/update.html").text
         soup = BeautifulSoup(html, 'lxml')
