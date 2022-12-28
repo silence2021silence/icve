@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 """
-Time:        2022/12/28 7:00
-Version:     V 0.0.3
+Time:        2022/12/28 22:40
+Version:     V 0.0.4
 File:        icve.py
 Describe:    
 Author:      Lanyu
@@ -180,26 +180,30 @@ class NewMOOC:
                 input("请输入任意内容后按回车键退出\n")
                 exit()
 
-        # 只含有项目的列表
+        # 只含有项目的列表一式两份
         task_list4 = []
+        task_list5 = []
         for i in range(len(task_num)):
             for j in range(task_num[i] - 1):
                 value = worksheet.col(i + 1)[1].value
                 task_list4.append("img/" + value)
+                task_list5.append("img/" + value)
 
         # 添加折叠项防止误点
-        task_list5 = []
+        task_list6 = []
         for i in task_list2:
             if i == task_list2[3]:
-                task_list5.append(i)
-                task_list5.append(task_list3[0])
+                task_list6.append(i)
+                task_list6.append(task_list3[0])
                 del task_list3[0]
-                task_list5.append(task_list4[0])
+                task_list6.append(task_list4[0])
                 del task_list4[0]
+                task_list6.append(task_list5[0])
+                del task_list5[0]
             else:
-                task_list5.append(i)
+                task_list6.append(i)
 
-        return task_list5, widget_list
+        return task_list6, widget_list
 
     def click(self, img, widget_list):
         replay_key = widget_list[1]
@@ -235,7 +239,7 @@ class NewMOOC:
             input("请输入任意内容后按回车键退出\n")
             exit()
         task_list, widget_list = self.get_task()
-        # print(task_list)
+        print(task_list)
         i = 0
         while i < len(task_list):
             img = task_list[i]
