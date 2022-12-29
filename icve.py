@@ -126,7 +126,7 @@ class OldMOOC:
 
 class NewMOOC:
     def get_task(self):
-        workbook = xlrd.open_workbook("task_new2.xls")
+        workbook = xlrd.open_workbook("task_new.xls")
         worksheet = workbook.sheet_by_index(0)
         # 读取控件
         widgets = [worksheet.col(0)[1].value, worksheet.col(0)[3].value]
