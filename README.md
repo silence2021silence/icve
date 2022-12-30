@@ -1,5 +1,6 @@
 # icve
-### icve智慧职教MOOC学院新版/旧版自动刷视频脚本 [[最新版本为v0.0.5点击下载]](https://www.aliyundrive.com/s/nDLUnSwzrgS)[[淘宝接商单]](https://geeklanyu.taobao.com)
+### icve智慧职教MOOC学院新版/旧版自动刷视频脚本 [[最新版本为v0.0.6点击下载]](https://www.aliyundrive.com/s/nDLUnSwzrgS)[[淘宝接商单]](https://geeklanyu.taobao.com)
+### v0.0.6版本以上 新版MOOC支持刷单个任务的多个视频 请看下面新版MOOC配置步骤
 ### 技术支持与意见反馈可直接在仓库建issues或者关注微信公众号“geeklanyu”留言或者联系邮箱“silence2021silence@163.com”。
 ### 免责声明：本程序仅供学习、研究与娱乐使用，使用本程序违反相关法律或相关规章制度的与作者无关，禁止用于任何商业用途。
 
@@ -43,3 +44,5 @@
 ### ![readme/img15.png](readme/img15.png)
 ### 播放键采样
 ### ![readme/img14.png](readme/img14.png)
+### 2.支持刷单个任务的多个视频，在任务图片文件名末尾加*号和数量即可
+### ![readme/img18.png](readme/img18.png)
