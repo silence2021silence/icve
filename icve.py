@@ -1,7 +1,7 @@
 # -*- coding=utf-8 -*-
 """
-Time:        2022/12/28 14:00
-Version:     V 0.0.5
+Time:        2022/12/30 14:00
+Version:     V 0.0.6
 File:        icve.py
 Describe:    
 Author:      Lanyu
@@ -149,6 +149,21 @@ class NewMOOC:
             # 去除空元素
             while "" in i:
                 i.remove("")
+
+        # 图片文件名后带*号意为此任务有多个视频 找出带*号的文件名取*号后的数字减去1并追加列表
+        # 如xxx.jpg*1为此任务有1个视频 xxx.jpg*5为此任务有5个视频
+        for i in range(len(tasks)):
+            for j in range(len(tasks[i])):
+                if "*" in tasks[i][j]:
+                    for k in range(int(tasks[i][j][tasks[i][j].index("*") + 1:]) - 1):
+                        tasks[i].append(tasks[i][j][:tasks[i][j].index("*")])
+
+        # 去除列表元素的*号
+        for i in range(len(tasks)):
+            for j in range(len(tasks[i])):
+                if "*" in tasks[i][j]:
+                    tasks[i][j] = tasks[i][j][:tasks[i][j].index("*")]
+
         # 结合
         combination = []
         for i in range(len(tasks)):
@@ -159,17 +174,20 @@ class NewMOOC:
                 combination.append("img/" + widgets[1])
                 combination.append("img/" + tasks[i][j])
                 combination.append("img/" + items[i])
-        return combination, widgets
 
-    def click(self, img, widget_list):
-        play_key = widget_list[1]
+        play_key = "img/" + widgets[1]
+
+        return combination, play_key
+
+    def click(self, img, play_key):
+        i = 0
         while True:
             if not os.path.exists(img):
                 print("找不到" + img + "文件")
                 input("请输入任意内容后按回车键退出\n")
                 exit()
-            time.sleep(1)
-            location = pyautogui.locateCenterOnScreen(img, confidence=0.9)
+            time.sleep(2)
+            location = pyautogui.locateCenterOnScreen(img, confidence=0.99)
             if location is not None:
                 pyautogui.click(location.x, location.y, interval=0.2, duration=0.5, button="left")
                 break
@@ -178,10 +196,17 @@ class NewMOOC:
                     print("等待播放完毕")
                     time.sleep(1)
                 else:
-                    time.sleep(1)
-                    pyautogui.moveTo(1700, 600, duration=0.5)  # 挖坑 有空再补：优化为检测屏幕分辨率 猜测右边目录窗口所占屏幕的大概比例 并将指针移至此坐标
-                    pyautogui.scroll(-100)
-                    print("寻找下一个任务")
+                    if i != 10:
+                        time.sleep(1)
+                        pyautogui.moveTo(1700, 600, duration=0.5)  # 挖坑 有空再补：优化为检测屏幕分辨率 猜测右边目录窗口所占屏幕的大概比例 并将指针移至此坐标
+                        pyautogui.scroll(-100)
+                        print("向下寻找下一个任务")
+                        i += 1
+                    if i == 10:
+                        time.sleep(1)
+                        pyautogui.moveTo(1700, 600, duration=0.5)
+                        pyautogui.scroll(100)
+                        print("向上寻找下一个任务")
 
     def main(self):
         print("程序已启动，2秒后开始操作")
@@ -194,12 +219,12 @@ class NewMOOC:
             print("找不到task_new.xls文件")
             input("请输入任意内容后按回车键退出\n")
             exit()
-        task_list, widget_list = self.get_task()
-        print(task_list)
+        task_list, play_key = self.get_task()
+        # print(task_list)
         i = 0
         while i < len(task_list):
             img = task_list[i]
-            self.click(img, widget_list)
+            self.click(img, play_key)
             print("点击", img)
             i += 1
         input("所有任务执行完毕，请输入任意内容后按回车键退出\n")
@@ -218,7 +243,7 @@ def welcome():
     if text != "同意":
         exit()
     else:
-        version = "v0.0.5"
+        version = "v0.0.6"
         print("当前版本为%s，正在检查更新..." % version)
         html = requests.get("https://gitee.com/silence2021silence/icve/blob/master/update.html").text
         soup = BeautifulSoup(html, 'lxml')
