@@ -187,6 +187,7 @@ class NewMOOC:
                 input("请输入任意内容后按回车键退出\n")
                 exit()
             time.sleep(2)
+            print("即将点击" + img)
             location = pyautogui.locateCenterOnScreen(img, confidence=0.99)
             if location is not None:
                 pyautogui.click(location.x, location.y, interval=0.2, duration=0.5, button="left")
@@ -196,17 +197,23 @@ class NewMOOC:
                     print("等待播放完毕")
                     time.sleep(1)
                 else:
-                    if i != 10:
-                        time.sleep(1)
-                        pyautogui.moveTo(1700, 600, duration=0.5)  # 挖坑 有空再补：优化为检测屏幕分辨率 猜测右边目录窗口所占屏幕的大概比例 并将指针移至此坐标
-                        pyautogui.scroll(-100)
-                        print("向下寻找下一个任务")
-                        i += 1
-                    if i == 10:
-                        time.sleep(1)
-                        pyautogui.moveTo(1700, 600, duration=0.5)
-                        pyautogui.scroll(100)
-                        print("向上寻找下一个任务")
+                    while True:
+                        if i % 2 == 0:
+                            time.sleep(1)
+                            pyautogui.moveTo(1700, 600, duration=0.5)  # 挖坑 有空再补：优化为检测屏幕分辨率 猜测右边目录窗口所占屏幕的大概比例 并将指针移至此坐标
+                            distance = -100 + i * -100
+                            pyautogui.scroll(distance)
+                            print("向下%d寻找下一个任务" % distance)
+                            i += 1
+                            break
+                        if i % 2 == 1:
+                            time.sleep(1)
+                            pyautogui.moveTo(1700, 600, duration=0.5)
+                            distance = 100 + i * 100
+                            pyautogui.scroll(distance)
+                            print("向上%d寻找下一个任务" % distance)
+                            i += 1
+                            break
 
     def main(self):
         print("程序已启动，2秒后开始操作")
