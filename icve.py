@@ -1,8 +1,8 @@
 # -*- coding=utf-8 -*-
 """
-Time:        2023/02/13 21:00
-Version:     V 0.0.1
-File:        icve.py
+Time:        2023/2/15 12:00
+Version:     V 0.0.2
+File:        icve-v0.0.2.py
 Describe:    
 Author:      Lanyu
 E-Mail:      silence2021silence@163.com
@@ -10,66 +10,145 @@ Github link: https://github.com/silence2021silence/
 Gitee link:  https://gitee.com/silence2021silence/
 """
 
-# -*- coding=utf-8 -*-
-
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from lxml import etree
 
-print("本软件仅供学习研究娱乐用,请遵守相关规定,本软件已开源,禁止用于商业用途\n")
-print("作者:蓝鱼Lanyu,使用教程或更新或问题反馈请关注博客网址:geeklanyu.com\n")
-course_id = input("输入params.courseId\n")
-options = webdriver.ChromeOptions()
-options.add_experimental_option("debuggerAddress", "127.0.0.1:9999")
-driver = webdriver.Chrome(options=options)
 
-# 解析html
-html = open("data.html", "r", encoding="utf-8").read()
-tree = etree.HTML(html)
+def run():
+    item_type = input("\n[1]视频\n[2]音频\n[3]文档\n[4]图文\n选择哦~\n")
+    print("好的~任务开始~")
 
-# 获取所有视频项目的xpath对象
-all_video_obj = tree.xpath("//div[@class='s_learn_type s_learn_video']/..")
-
-# 筛选出已完成和未完成的视频
-finished_video_id = []
-unfinished_video_id = []
-for i in all_video_obj:
-    t = i.xpath("div[1]/@class='item_done_icon item_done_pos'")
-    if t:
-        unfinished_video_id.append(i.xpath("./@id")[0].replace("s_point_", ""))
+    try:
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option("debuggerAddress", "127.0.0.1:9999")
+        driver = webdriver.Chrome(options=options)
+    except BaseException as e:
+        print("出错啦~检查谷歌浏览器是否正常开启~")
+        print("报错内容：\n", e)
     else:
-        finished_video_id.append(i.xpath("./@id")[0].replace("s_point_", ""))
+        print("谷歌浏览器连接成功~")
+
+        # 解析html
+        try:
+            html = open("data.html", "r", encoding="utf-8").read()
+        except FileNotFoundError:
+            print("找不到data.html哦~")
+            run()
+        else:
+            tree = etree.HTML(html)
+            course_id = tree.xpath("//input[@id='currentCourseId']/@value")[0]
+            if item_type == "1":
+                item_type = "video"
+                all_video_obj = tree.xpath("//div[@class='s_learn_type s_learn_video']/..")
+                unfinished_ids, unfinished_names = get_unfinished_item(all_video_obj)
+                urls = make_urls(unfinished_ids, item_type, course_id)
+                send_request(urls, driver, item_type, unfinished_names)
+
+            elif item_type == "2":
+                item_type = "audio"
+                all_audio_obj = tree.xpath("//div[@class='s_learn_type s_learn_audio']/..")
+                unfinished_ids, unfinished_names = get_unfinished_item(all_audio_obj)
+                urls = make_urls(unfinished_ids, item_type, course_id)
+                send_request(urls, driver, item_type, unfinished_names)
+
+            elif item_type == "3":
+                item_type = "doc"
+                all_doc_obj = tree.xpath("//div[@class='s_learn_type s_learn_doc']/..")
+                unfinished_ids, unfinished_names = get_unfinished_item(all_doc_obj)
+                urls = make_urls(unfinished_ids, item_type, course_id)
+                send_request(urls, driver, item_type, unfinished_names)
+
+            elif item_type == "4":
+                item_type = "text"
+                all_doc_obj = tree.xpath("//div[@class='s_learn_type s_learn_text']/..")
+                unfinished_ids, unfinished_names = get_unfinished_item(all_doc_obj)
+                urls = make_urls(unfinished_ids, item_type, course_id)
+                send_request(urls, driver, item_type, unfinished_names)
+
+            else:
+                print("输入错误~")
+                run()
+
+
+# 爬取未完成的项目
+def get_unfinished_item(obj):
+    print("正在爬取未完成的项目~")
+    unfinished_ids = []
+    unfinished_names = []
+    for i in obj:
+        t = i.xpath("div[1]/@class='item_done_icon item_done_pos'")
+        if t:
+            unfinished_ids.append(i.xpath("./@id")[0].replace("s_point_", ""))
+            unfinished_names.append(i.xpath("div[3]//text()")[0])
+    print("爬取完毕~")
+    return unfinished_ids, unfinished_names
+
 
 # 嵌入参数生成请求地址
-urls = []
-for i in unfinished_video_id:
-    url = "https://course.icve.com.cn/learnspace/learn/learn/templateeight/content_video.action?params.courseId=%s&params.itemId=%s&params.templateStyleType=0&_t=%d" % (course_id, i, round(time.time() * 1000))
-    urls.append(url)
+def make_urls(item_ids, item_type, course_id):
+    print("正在生成请求地址~")
+    urls = []
+    for i in item_ids:
+        url = "https://course.icve.com.cn/learnspace/learn/learn/templateeight/content_%s.action?params.courseId=%s&params.itemId=%s&params.templateStyleType=0&_t=%d" % (
+            item_type, course_id, i, round(time.time() * 1000))
+        urls.append(url)
+    print("生成完毕~")
+    return urls
 
 
-# 获取视频长度
-def get_length():
+# 发送请求
+def send_request(urls, driver, item_type, unfinished_names):
+    for i in range(len(urls)):
+        print("开始处理~", unfinished_names[i], "[%d/%d]" % (unfinished_names.index(unfinished_names[i]) + 1, len(unfinished_names)))
+        print("发送请求~")
+        driver.get(urls[i])
+        print("请求成功~")
+        time.sleep(1)
+        driver.find_element(By.XPATH, value="*").send_keys(Keys.SPACE)
+        time.sleep(get_length(driver, item_type) + 5)
+        print("处理完毕~")
+    input("任务结束")
+
+
+# 获取视频/音频长度
+def get_length(driver, item_type):
+    xpath = ""
+    if item_type == "video":
+        xpath = "//span[@id='screen_player_time_2']//text()"
+    if item_type == "audio":
+        xpath = "//div[@class='audio-time audio-time-duration']//text()"
+    if item_type == "doc" or item_type == "text":
+        return 0
+
+    print("正在获取视频/音频长度~")
     while True:
         html = driver.page_source
         tree = etree.HTML(html)
-        length_str = tree.xpath("//span[@id='screen_player_time_2']//text()")[0]
+        length_str = tree.xpath(xpath)[0]
         h_m_s = [int(i) for i in length_str.split(":")]
         # 转换为秒
         if len(h_m_s) == 3:
             s = int(h_m_s[0]) * 3600 + int(h_m_s[1]) * 60 + int(h_m_s[2])
             if s != 0:
+                print("获取完毕~")
                 return s
         elif len(h_m_s) == 2:
             s = int(h_m_s[0]) * 60 + int(h_m_s[1])
             if s != 0:
+                print("获取完毕~")
                 return s
 
 
-# 发出请求
-for i in urls:
-    driver.get(i)
-    driver.find_element(By.XPATH, value="*").send_keys(Keys.SPACE)
-    time.sleep(get_length() + 5)
-
+if __name__ == "__main__":
+    print("hello哇~")
+    time.sleep(0.5)
+    print("我是本软件的作者[Lanyu(蓝鱼)]~")
+    time.sleep(0.5)
+    print("使用教程|检查更新|问题反馈 前往我的博客[geeklanyu.com]查看哦~")
+    time.sleep(0.5)
+    print("本软件仅供学习/研究/娱乐用,请遵守相关规定,本软件已开源,禁止用于商业用途~")
+    time.sleep(0.5)
+    run()
