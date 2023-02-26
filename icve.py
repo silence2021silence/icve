@@ -21,7 +21,7 @@ def run1():
     driver = webdriver.Chrome(executable_path="chromedriver.exe")
     driver.get("https://icve-mooc.icve.com.cn/cms/")
     print("谷歌浏览器连接成功")
-    input("登录账号并进入课程学习后按回车键\n")
+    input("登录账号，进入课程学习，保存好data.html后按回车键\n")
     run2(driver)
 
 
