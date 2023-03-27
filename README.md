@@ -1,6 +1,6 @@
 # icve
-### icve智慧职教MOOC学院新版自动刷视频脚本 [[最新版本为v0.0.3点击下载]](https://www.aliyundrive.com/s/nDLUnSwzrgS)
-### 使用教程请前往我的[[博客]](https://geeklanyu.com)
+### icve智慧职教MOOC学院新版自动刷视频脚本
+### 使用教程和exe文件下载链接请前往我的[[博客]](https://geeklanyu.com)
 ### 更新日志：
 ----------v0.0.1----------
 
