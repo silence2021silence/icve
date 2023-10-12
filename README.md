@@ -19,5 +19,7 @@
 1.改为直接调用chromedriver.exe，无需提前进行复杂配置工作。
 
 ----------v0.0.4----------
-1.本次更新针对Chrome谷歌浏览器的chromedriver.exe不知道啥情况停更了，导致selenium无法调用。现增加Edge微软浏览器、Firefox火狐浏览器可供选择。
+
+1.本次更新针对Chrome谷歌浏览器的chromedriver.exe不知道啥情况停更了，导致selenium无法调用。现增加Edge微软浏览器、Firefox火狐浏览器可供选择.
+
 2.增加一次刷完包括文档、视频等所有章节的选项
