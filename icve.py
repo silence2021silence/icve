@@ -1,9 +1,9 @@
 # -*- coding=utf-8 -*-
 """
-Time:        2023/2/26 17:00
-Version:     V 0.0.3
-File:        icve-v0.0.3.py
-Describe:    
+Time:        2023/10/13 2:00
+Version:     V 0.0.4
+File:        icve-v0.0.4.py
+Describe:
 Author:      Lanyu
 E-Mail:      silence2021silence@163.com
 Github link: https://github.com/silence2021silence/
@@ -17,28 +17,71 @@ from selenium.webdriver.common.keys import Keys
 from lxml import etree
 
 
-def run1():
-    driver = webdriver.Chrome(executable_path="chromedriver.exe")
-    driver.get("https://icve-mooc.icve.com.cn/cms/")
-    print("谷歌浏览器连接成功")
-    input("登录账号，进入课程学习，保存好data.html后按回车键\n")
-    run2(driver)
+def connect_browser():
+    browser = input(
+        "\n[1] Chrome(谷歌)浏览器\n[2] Edge(微软)浏览器\n[3] Firefox(火狐)浏览器\n选择浏览器 -> ")
+    if browser == "1":
+        try:
+            print("\n正在连接Chrome浏览器")
+            driver = webdriver.Chrome()
+        except:
+            print("\nChrome浏览器连接失败, 重试或尝试其他浏览器")
+            connect_browser()
+        else:
+            print("\nChrome浏览器连接成功")
+            driver.get("https://icve-mooc.icve.com.cn/cms/")
+            file = input(
+                "\n1. 在弹出的浏览器里登录账号并进入“课程学习”, \n2. 指针在右边目录位置右击“查看框架的源代码”, \n3. Ctrl+A全选并复制所有源代码，\n4. "
+                "粘贴到记事本并以“.html”格式保存到与本程序同一文件夹, \n5. 输入此html的文件名(如xxx.html) -> ")
+            task(driver, file)
+    elif browser == "2":
+        try:
+            print("\n正在连接Edge浏览器")
+            driver = webdriver.Edge()
+        except:
+            print("\nEdge浏览器连接失败, 重试或尝试其他浏览器")
+            connect_browser()
+        else:
+            print("\nEdge浏览器连接成功")
+            driver.get("https://icve-mooc.icve.com.cn/cms/")
+            file = input(
+                "\n1. 在弹出的浏览器里登录账号并进入“课程学习”, \n2. 指针在右边目录位置右击“查看框架的源代码”, \n3. Ctrl+A全选并复制所有源代码，\n4. "
+                "粘贴到记事本并以“.html”格式保存到与本程序同一文件夹, \n5. 输入此html的文件名(如xxx.html) -> ")
+            task(driver, file)
+    elif browser == "3":
+        try:
+            print("\n正在连接Firefox浏览器")
+            driver = webdriver.Firefox()
+        except:
+            print("\nFirefox浏览器连接失败, 重试或尝试其他浏览器")
+            connect_browser()
+        else:
+            print("\nFirefox浏览器连接成功")
+            driver.get("https://icve-mooc.icve.com.cn/cms/")
+            file = input(
+                "\n1. 在弹出的浏览器里登录账号并进入“课程学习”, \n2. 指针在右边目录位置右击“查看框架的源代码”, \n3. Ctrl+A全选并复制所有源代码，\n4. "
+                "粘贴到记事本并以“.html”格式保存到与本程序同一文件夹, \n5. 输入此html的文件名(如xxx.html) -> ")
+            task(driver, file)
+    else:
+        print("\n输入错误, 请重新选择")
+        connect_browser()
 
 
-def run2(driver):
-    item_type = input("\n[1]视频\n[2]音频\n[3]文档\n[4]图文\n选择哦~\n")
-    print("好的~任务开始")
+def task(driver, file):
+    item_type = input("\n[1] 视频\n[2] 音频\n[3] 文档\n[4] 图文\n[5] 以上全部\n选择需要刷的类型 -> ")
+    print("\n---------------任务开始---------------")
 
     # 解析html
     try:
-        html = open("data.html", "r", encoding="utf-8").read()
+        html = open(file, "r", encoding="utf-8").read()
     except FileNotFoundError:
-        print("找不到data.html哦")
-        run1()
+        print("找不到“%s”" % file)
+        task(driver, file)
     else:
         tree = etree.HTML(html)
         course_id = tree.xpath("//input[@id='currentCourseId']/@value")[0]
         if item_type == "1":
+            print("\n---------------处理视频---------------")
             item_type = "video"
             all_video_obj = tree.xpath("//div[@class='s_learn_type s_learn_video']/..")
             unfinished_ids, unfinished_names = get_unfinished_item(all_video_obj)
@@ -46,6 +89,7 @@ def run2(driver):
             send_request(urls, driver, item_type, unfinished_names)
 
         elif item_type == "2":
+            print("\n---------------处理音频---------------")
             item_type = "audio"
             all_audio_obj = tree.xpath("//div[@class='s_learn_type s_learn_audio']/..")
             unfinished_ids, unfinished_names = get_unfinished_item(all_audio_obj)
@@ -53,6 +97,7 @@ def run2(driver):
             send_request(urls, driver, item_type, unfinished_names)
 
         elif item_type == "3":
+            print("\n---------------处理文档---------------")
             item_type = "doc"
             all_doc_obj = tree.xpath("//div[@class='s_learn_type s_learn_doc']/..")
             unfinished_ids, unfinished_names = get_unfinished_item(all_doc_obj)
@@ -60,15 +105,48 @@ def run2(driver):
             send_request(urls, driver, item_type, unfinished_names)
 
         elif item_type == "4":
+            print("\n---------------处理图文---------------")
             item_type = "text"
             all_doc_obj = tree.xpath("//div[@class='s_learn_type s_learn_text']/..")
             unfinished_ids, unfinished_names = get_unfinished_item(all_doc_obj)
             urls = make_urls(unfinished_ids, item_type, course_id)
             send_request(urls, driver, item_type, unfinished_names)
 
+        elif item_type == "5":
+            print("\n---------------处理图文---------------")
+            item_type = "text"
+            all_doc_obj = tree.xpath("//div[@class='s_learn_type s_learn_text']/..")
+            unfinished_ids, unfinished_names = get_unfinished_item(all_doc_obj)
+            urls = make_urls(unfinished_ids, item_type, course_id)
+            send_request(urls, driver, item_type, unfinished_names)
+
+            print("\n---------------处理文档---------------")
+            item_type = "doc"
+            all_doc_obj = tree.xpath("//div[@class='s_learn_type s_learn_doc']/..")
+            unfinished_ids, unfinished_names = get_unfinished_item(all_doc_obj)
+            urls = make_urls(unfinished_ids, item_type, course_id)
+            send_request(urls, driver, item_type, unfinished_names)
+
+            print("\n---------------处理音频---------------")
+            item_type = "audio"
+            all_audio_obj = tree.xpath("//div[@class='s_learn_type s_learn_audio']/..")
+            unfinished_ids, unfinished_names = get_unfinished_item(all_audio_obj)
+            urls = make_urls(unfinished_ids, item_type, course_id)
+            send_request(urls, driver, item_type, unfinished_names
+                         )
+            print("\n---------------处理视频---------------")
+            item_type = "video"
+            all_video_obj = tree.xpath("//div[@class='s_learn_type s_learn_video']/..")
+            unfinished_ids, unfinished_names = get_unfinished_item(all_video_obj)
+            urls = make_urls(unfinished_ids, item_type, course_id)
+            send_request(urls, driver, item_type, unfinished_names)
+
         else:
-            print("输入错误")
-            run1()
+            print("\n输入错误, 请重新选择")
+            task(driver, file)
+
+        print("\n---------------任务结束---------------")
+        task(driver, file)
 
 
 # 爬取未完成的项目
@@ -100,7 +178,8 @@ def make_urls(item_ids, item_type, course_id):
 # 发送请求
 def send_request(urls, driver, item_type, unfinished_names):
     for i in range(len(urls)):
-        print("开始处理", unfinished_names[i], "[%d/%d]" % (unfinished_names.index(unfinished_names[i]) + 1, len(unfinished_names)))
+        print("开始处理", unfinished_names[i],
+              "[%d/%d]" % (unfinished_names.index(unfinished_names[i]) + 1, len(unfinished_names)))
         print("发送请求")
         driver.get(urls[i])
         windows = driver.window_handles
@@ -111,8 +190,6 @@ def send_request(urls, driver, item_type, unfinished_names):
         time.sleep(get_length(driver, item_type) + 5)
         print("等待播放完毕")
         print("处理完毕")
-    input("任务结束~如要继续执行任务按回车键")
-    run2(driver)
 
 
 # 获取视频/音频长度
@@ -145,12 +222,11 @@ def get_length(driver, item_type):
 
 
 if __name__ == "__main__":
-    print("hello哇~")
-    time.sleep(0.5)
-    print("我是本软件的作者[Lanyu(蓝鱼)]")
-    time.sleep(0.5)
-    print("使用教程|检查更新|问题反馈 前往我的博客[geeklanyu.com]查看哦")
-    time.sleep(0.5)
-    print("本软件仅供学习/研究/娱乐用,请遵守相关规定,本软件已开源,禁止用于商业用途")
-    time.sleep(0.5)
-    run1()
+    print("本软件作者: [Lanyu(蓝鱼)]")
+    time.sleep(0.2)
+    print("使用教程|检查更新|问题反馈|提问 请前往我的博客[geeklanyu.com]或微信公众号[极客蓝鱼]")
+    time.sleep(0.2)
+    print("本软件仅供学习/研究/娱乐用, 请遵守相关规定, 本软件已开源, 禁止用于商业用途")
+    time.sleep(0.2)
+    print("源代码地址: https://github.com/silence2021silence/")
+    connect_browser()
